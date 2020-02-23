@@ -257,12 +257,13 @@ After stopping or killing the process, retry to update."
 
 (defun lsp-python-ms-locate-python ()
   "Look for virtual environments local to the workspace"
-  (let* ((venv (locate-dominating-file default-directory "venv/"))
-         (sys-python (executable-find lsp-python-ms-python-executable-cmd))
-         (venv-python (f-expand "venv/bin/python" venv)))
-    (cond
-     ((and venv (f-executable? venv-python)) venv-python)
-     (sys-python))))
+   (let* ((workspace-name (file-name-nondirectory (lsp-workspace-root)))
+          (venv (locate-dominating-file default-directory ".virtualenvs/"))
+          (sys-python (executable-find lsp-python-ms-python-executable-cmd))
+          (venv-python (f-expand (concat ".virtualenvs/" workspace-name "/bin/python") venv)))
+     (cond
+      ((and venv (f-executable? venv-python)) venv-python)
+      (sys-python))))
 
 ;; it's crucial that we send the correct Python version to MS PYLS,
 ;; else it returns no docs in many cases furthermore, we send the
